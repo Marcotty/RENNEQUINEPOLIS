@@ -4,6 +4,7 @@ import argparse
 
 def gui():
     print('GUI enabled')
+def recherche_id():
     
 def exemple():
     parser = argparse.ArgumentParser(description='Process some integers.')
