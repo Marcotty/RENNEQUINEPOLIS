@@ -1,10 +1,9 @@
 # - * - coding:Utf8 - * -    print(number)
 
 import argparse
-
+from db import MySQL, Postgres
 def gui():
     print('GUI enabled')
-def recherche_id():
     
 def exemple():
     parser = argparse.ArgumentParser(description='Process some integers.')
@@ -25,6 +24,12 @@ def cin():
     args = parser.parse_args()
     if args.gui:
         gui()
-#exemple()
-cin()
+        
+def recherche_id(id):
 
+    systems = { '--mysql': MySQL, '--postgres': Postgres }
+    DB = systems['--mysql']
+    db = DB['movies']
+#exemple()
+#cin()
+recherche_id(555)
