@@ -1,8 +1,10 @@
 from tkinter import *
 from threading import Thread
 from db import DB
+from subprocess import Popen
 import sys
 import argparse
+import os
 
 def gui():
     win = Tk()
@@ -30,6 +32,10 @@ def recherche_title(_title, db):
     
     resultat = db.query("SELECT id, title FROM movie WHERE title LIKE '" + _title + "';")
     print(resultat)
+def save():
+    print("Save to github")
+    p = Popen("save.bat", cwd=os.getcwd())
+    stdout, stderr = p.communicate()
     
 def check_args(db):
     parser = argparse.ArgumentParser(description='RechFilmCC # Recherche de films', usage = '%(prog)s [--options]')
@@ -42,26 +48,31 @@ def check_args(db):
     #Create a --title option to execute recherche_title() function #
     parser.add_argument('--title', 
                         help='Recherche par titre')
-    #Create a --actor option to execute recherche_title() function #
+    #Create a --actor option to execute recherche_actor() function #
     parser.add_argument('--actor', 
                         help='Recherche par titre')
-    #Create a --budget option to execute recherche_title() function #
+    #Create a --budget option to execute recherche_budget() function #
     parser.add_argument('--budget', 
                         help='Recherche par titre')                    
-    #Create a --released-date option to execute recherche_title() function #
+    #Create a --released-date option to execute recherche_releasedDate() function #
     parser.add_argument('--released-date', 
                         help='Recherche par titre')
-                        
+    #Create a --save option to execute save() function # => push to gitHub https://github.com/Marcotty/RENNEQUINEPOLIS.git
+    parser.add_argument('-s', '--save', action="store_true",
+                        help='Save to github')                  
     args = parser.parse_args()
-    if args.id:
-        recherche_id(args.id, db)
-    elif args.title:
-        recherche_title(args.title, db)
     if args.gui:
         thread_gui = ThreadGui()
         thread_gui.start()
         #thread_gui.join()
-
+    if args.id:
+        recherche_id(args.id, db)
+    elif args.title:
+        recherche_title(args.title, db)
+    elif args.save:
+        save()
+    else:
+        print("#No args passed")
 
 class ThreadGui(Thread):
 
