@@ -15,8 +15,7 @@ def gui():
     win.mainloop()
     
 def recherche_id(_id, db):
-    print('id : ', end='')
-    print(_id)
+    print('\nRecherche par id :')
     #db = DB(username="root", password="root", hostname="localhost", dbtype="mysql", dbname="movies")
     #print(db.tables)
     #print(db.find_column("id"))
@@ -32,10 +31,14 @@ def recherche_title(_title, db):
     
     resultat = db.query("SELECT id, title FROM movie WHERE title LIKE '" + _title + "';")
     print(resultat)
-def save():
-    print("Save to github")
-    p = Popen("save.bat", cwd=os.getcwd())
-    stdout, stderr = p.communicate()
+def git():
+    try:
+        print("Save to github")
+        p = Popen("save.bat", cwd=os.getcwd())
+        stdout, stderr = p.communicate()
+        print("Save Succedeed")
+    except FileNotFoundError:
+        print("Save Failed - File save.bat not found")
     
 def check_args(db):
     parser = argparse.ArgumentParser(description='RechFilmCC # Recherche de films', usage = '%(prog)s [--options]')
@@ -57,8 +60,8 @@ def check_args(db):
     #Create a --released-date option to execute recherche_releasedDate() function #
     parser.add_argument('--released-date', 
                         help='Recherche par titre')
-    #Create a --save option to execute save() function # => push to gitHub https://github.com/Marcotty/RENNEQUINEPOLIS.git
-    parser.add_argument('-s', '--save', action="store_true",
+    #Create a --git option to execute git() function # => push to gitHub https://github.com/Marcotty/RENNEQUINEPOLIS.git
+    parser.add_argument('--git', action="store_true",
                         help='Save to github')                  
     args = parser.parse_args()
     if args.gui:
@@ -69,8 +72,8 @@ def check_args(db):
         recherche_id(args.id, db)
     elif args.title:
         recherche_title(args.title, db)
-    elif args.save:
-        save()
+    elif args.git:
+        git()
     else:
         print("#No args passed")
 
@@ -90,7 +93,7 @@ print('# Start app')
 db = DB(username="root", password="root", hostname="localhost", dbtype="mysql", dbname="movies")
 
 check_args(db)
-print('# Fin app') 
+print('\n# Fin app') 
 #while(1):
  #   command = input('>>> ')
   #  print(command)
