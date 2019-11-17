@@ -1,7 +1,7 @@
 # - * - coding:Utf8 - * -    print(number)
 
 import argparse
-from db import MySQL, Postgres
+from db import DB
 def gui():
     print('GUI enabled')
     
@@ -25,11 +25,13 @@ def cin():
     if args.gui:
         gui()
         
-def recherche_id(id):
+def recherche_id(_id):
 
-    systems = { '--mysql': MySQL, '--postgres': Postgres }
-    DB = systems['--mysql']
-    db = DB['movies']
+    db = DB(username="root", password="root", hostname="localhost", dbtype="mysql", dbname="movies")
+    print(db.tables)
+    print(db.find_column("id"))
+    print("SELECT * FROM movie WHERE id LIKE '" + str(id) + "';")
+    print(db.query("SELECT * FROM movie WHERE id LIKE '" + str(_id) + "';"))
 #exemple()
 #cin()
-recherche_id(555)
+recherche_id(1234)
