@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #  split.py
@@ -93,10 +94,15 @@ Person = namedtuple('person', ['id', 'full_name'])
 Actor = namedtuple('actor', ['movie_id', 'actor_id', 'name', 'character'])
 Director = namedtuple('director', ['movie_id', 'director_id', 'name'])
 
+# Separators
+DOUBLE_VLINE = '\u2016'
+TRIANGLE_BULLET = '\u2023'
+DOT_LEADER = '\u2024'
+
 def split(text):
 	""" Split a subfield and return a list of values. """
 	try:
-		return ( item.split('\u2024') for item in text.split('\u2016') )
+		return ( item.split(DOT_LEADER) for item in text.split(DOUBLE_VLINE) )
 	except AttributeError:
 		return tuple()
 
@@ -107,15 +113,14 @@ try:
 	# Check command line arguments: database system and name
 	DB = systems[sys.argv[1]]
 	db = DB(*sys.argv[2:3])
-    
 
 except:
 	print('Syntax:', sys.argv[0], '--mysql|--postgres [DATABASE]', file=sys.stderr)
 	sys.exit(1)
-print(db)
+
 for line in sys.stdin:
 	# Remove trailing spaces from each line in the source stream
-	raw_movie = line.strip().split('\u2023')
+	raw_movie = line.strip().split(TRIANGLE_BULLET)
 
 	# Make genres either an array (Postgres) or a SET (MySQL)
 	genres = db.list(genre[1] for genre in split(raw_movie[-3])) if raw_movie[-3] else ''
@@ -134,7 +139,7 @@ for line in sys.stdin:
 			db.insert('characters', MovieActor(movie.id, actor.actor_id, actor.character))
 		except TypeError as e:
 			# Error message format: [movie ID::actor] "message" in "characters field"
-			print('[{}::actor] {} in “{}”'.format(raw_movie[0], e, raw_movie[-1]), file=sys.stderr)
+			print('[{}::actor] {} in “{}”'.format(movie.id, e, raw_movie[-1]), file=sys.stderr)
 
 	for person in split(raw_movie[-2]):
 		try:
@@ -143,4 +148,4 @@ for line in sys.stdin:
 			db.insert('directors', MovieDirector(movie.id, director.director_id))
 		except TypeError as e:
 			# Error message format: see actor
-			print('[{}::director] {} in “{}”'.format(raw_movie[0], e, raw_movie[-2]), file=sys.stderr)
+			print('[{}::director] {} in “{}”'.format(movie.id, e, raw_movie[-2]), file=sys.stderr)
